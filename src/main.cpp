@@ -58,10 +58,17 @@ void on_mqtt_message_received(char* topic, byte* payload, unsigned int length) {
       ESP_LOGE(TAG, "Requested cube dropper 0 is empty!");
       return;
     }
+    StaticJsonDocument<200> doc;
+    doc["pickupPointN"] = PICKUP_POINT_N;
+    doc["cubeDropperN"] = LEFT_DROPPER_POSITION;
+    size_t doc_size = measureJson(doc);
+    uint8_t* output = (uint8_t*)malloc(doc_size);
+    serializeJson(doc, (void*)output, doc_size);
 
     leftDropper.releaseCube();
     ESP_LOGD(TAG, "Cube 0 has been released");
-    mqttClient.publish(release_response_cube_0_topic, "");
+    mqttClient.publish(release_response_cube_0_topic, output, doc_size);
+    free(output);
     return;
   }
 
@@ -70,10 +77,18 @@ void on_mqtt_message_received(char* topic, byte* payload, unsigned int length) {
       ESP_LOGE(TAG, "Requested cube dropper 1 is empty!");
       return;
     }
-
     rightDropper.releaseCube();
     ESP_LOGD(TAG, "Cube 1 has been released");
-    mqttClient.publish(release_response_cube_1_topic, "");
+
+    StaticJsonDocument<200> doc;
+    doc["pickupPointN"] = PICKUP_POINT_N;
+    doc["cubeDropperN"] = RIGHT_DROPPER_POSITION;
+    size_t doc_size = measureJson(doc);
+    uint8_t* output = (uint8_t*)malloc(doc_size);
+    serializeJson(doc, (void*)output, doc_size);
+
+    mqttClient.publish(release_response_cube_1_topic, output, doc_size);
+    free(output);
     return;
   }
 
