@@ -12,21 +12,27 @@ private:
 
   Servo _servo;
   int _servoPin;
-
   int _irPin;
+  int _redLedPin;
+  int _yellowLedPin;
+  int _greenLedPin;
 
   void _open();
 
   void _close();
 
+  void _onCubeInsertionResult(bool inserted);
+
+  bool _waitForCubeInsertion();
+
 public:
   Dropper();
 
-  void init(int position, int servoPin, int irPin);
+  void init(int position, int servoPin, int irPin, int redLedPin, int yellowLedPin, int greenLedPin);
 
   void releaseCube();
 
   bool isEmpty();
 
-  bool waitForCubeInsertion();
+  bool onCubeInsertionRequest();
 };

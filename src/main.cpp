@@ -50,7 +50,7 @@ void on_mqtt_message_received(char* topic, byte* payload, unsigned int length) {
 
   if (strcmp(topic, release_cube_0_topic) == 0) {
     if (leftDropper.isEmpty()) {
-      ESP_LOGE(TAG, "Requested cube dropper is empty!");
+      ESP_LOGE(TAG, "Requested cube dropper 0 is empty!");
       return;
     }
 
@@ -60,46 +60,45 @@ void on_mqtt_message_received(char* topic, byte* payload, unsigned int length) {
   }
 
   if (strcmp(topic, release_cube_1_topic) == 0) {
-    // if (rightDropper.isEmpty()) {
-    //   ESP_LOGE(TAG, "Requested cube dropper is empty!");
-    //   return;
-    // }
+    if (rightDropper.isEmpty()) {
+      ESP_LOGE(TAG, "Requested cube dropper 1 is empty!");
+      return;
+    }
 
-    // rightDropper.releaseCube();
-    // ESP_LOGD(TAG, "Cube 1 has been released");
-    // return;
+    rightDropper.releaseCube();
+    ESP_LOGD(TAG, "Cube 1 has been released");
+    return;
   }
 
   if (strcmp(topic, insert_request_cube_0_topic) == 0) {
     if (!leftDropper.isEmpty()) {
-      ESP_LOGE(TAG, "Cube dropper is already occupied!");
+      ESP_LOGE(TAG, "Cube dropper 0 is already occupied!");
       return;
     }
 
     // wait for cube to be inserted
-    bool inserted = leftDropper.waitForCubeInsertion();
+    bool inserted = leftDropper.onCubeInsertionRequest();
     if (inserted) {
-      ESP_LOGD(TAG, "Cube has been inserted");
+      ESP_LOGD(TAG, "Cube 0 has been inserted");
     } else {
-      ESP_LOGD(TAG, "Cube has NOT been inserted");
+      ESP_LOGD(TAG, "Cube 0 has NOT been inserted");
     }
     return;
   }
 
   if (strcmp(topic, insert_request_cube_1_topic) == 0) {
-    // if (!rightDropper.isEmpty()) {
-    //   ESP_LOGE(TAG, "Cube dropper is already occupied!");
-    //   return;
-    // }
+    if (!rightDropper.isEmpty()) {
+      ESP_LOGE(TAG, "Cube dropper 1 is already occupied!");
+      return;
+    }
 
-    // // wait for cube to be inserted
-    // ESP_LOGD(TAG, "Waiting for cube to be inserted");
-    // while (digitalRead(rightIrPin) == HIGH) {
-    //   ESP_LOGD(TAG, ".");
-    //   delay(150);
-    // }
-
-    // rightDropper.onCubeInserted();
+    // wait for cube to be inserted
+    bool inserted = rightDropper.onCubeInsertionRequest();
+    if (inserted) {
+      ESP_LOGD(TAG, "Cube 1 has been inserted");
+    } else {
+      ESP_LOGD(TAG, "Cube 1 has NOT been inserted");
+    }
     return;
   }
 }
@@ -124,10 +123,18 @@ void setup() {
   Serial.begin(115200);
 
   pinMode(leftIrPin, INPUT);
-  pinMode(rightIrPin, INPUT);
+  pinMode(leftRedLedPin, OUTPUT);
+  pinMode(leftYellowLedPin, OUTPUT);
+  pinMode(leftGreenLedPin, OUTPUT);
+  leftDropper.init(LEFT_DROPPER_POSITION, leftServoPin, leftIrPin, leftRedLedPin, leftYellowLedPin, leftGreenLedPin);
 
-  leftDropper.init(LEFT_DROPPER_POSITION, leftServoPin, leftIrPin);
-  rightDropper.init(RIGHT_DROPPER_POSITION, rightServoPin, rightIrPin);
+  pinMode(rightIrPin, INPUT);
+  pinMode(rightRedLedPin, OUTPUT);
+  pinMode(rightYellowLedPin, OUTPUT);
+  pinMode(rightGreenLedPin, OUTPUT);
+  rightDropper.init(
+      RIGHT_DROPPER_POSITION, rightServoPin, rightIrPin, leftRedLedPin, leftYellowLedPin, leftGreenLedPin
+  );
 
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
@@ -138,45 +145,13 @@ void setup() {
   mqttClient.setServer(BROKER_IP, BROKER_PORT);
   mqttClient.setCallback(on_mqtt_message_received);
 
-  // pinMode(redLedPin, OUTPUT);
-  // pinMode(yellowLedPin, OUTPUT);
-  // pinMode(greenLedPin, OUTPUT);
   mqtt_connect();
 }
 
 void loop() {
-  // int state = digitalRead(irPin);
-
-  // leftDropper.releaseCube();
-  // delay(2000);
-
   if (!mqttClient.connected()) {
     ESP_LOGD(TAG, "mqtt client disconnected");
     mqtt_connect();
   }
   mqttClient.loop();
-
-  // if (digitalRead(leftIrPin) == LOW) {
-  //   Serial.println("no");
-  // } else {
-  //   Serial.println("yes");
-  // }
-
-  // delay(10);
-
-  // digitalWrite(redLedPin, LOW);
-  // digitalWrite(yellowLedPin, LOW);
-  // digitalWrite(greenLedPin, HIGH);
-
-  // delay(2000);
-
-  // digitalWrite(redLedPin, LOW);
-  // digitalWrite(yellowLedPin, HIGH);
-  // digitalWrite(greenLedPin, LOW);
-
-  // digitalWrite(redLedPin, HIGH);
-  // digitalWrite(yellowLedPin, LOW);
-  // digitalWrite(greenLedPin, LOW);
-
-  // delay(10000);
 }
