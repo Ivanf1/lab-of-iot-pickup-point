@@ -2,12 +2,14 @@
 
 #include <Arduino.h>
 
+#define TAG "DROPPER"
+
 Dropper::Dropper() {}
 
-void Dropper::init(int position, int servoPin) {
+void Dropper::init(int position, int servoPin, int irPin) {
   this->_position = position;
   this->_servoPin = servoPin;
-  this->_empty = true;
+  this->_irPin = irPin;
 
   this->_servo.attach(this->_servoPin);
 }
@@ -30,10 +32,18 @@ void Dropper::releaseCube() {
   _open();
   delay(DELAY_AFTER_OPEN);
   _close();
-
-  this->_empty = true;
 }
 
-bool Dropper::isEmpty() { return _empty; }
+bool Dropper::isEmpty() { return digitalRead(this->_irPin) == HIGH; }
 
-void Dropper::onCubeInserted() { this->_empty = false; }
+bool Dropper::waitForCubeInsertion() {
+  ESP_LOGD(TAG, "Waiting for cube to be inserted");
+  int i = 0;
+  while (digitalRead(this->_irPin) == HIGH && i <= 50) {
+    i++;
+    ESP_LOGD(TAG, ".");
+    delay(150);
+  }
+
+  return i <= 50;
+}
