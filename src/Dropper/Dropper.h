@@ -5,6 +5,12 @@
 class Dropper
 {
 private:
+  enum StatusLED {
+    EMPTY,
+    FULL,
+    AWAITING_INSERTION,
+  };
+
   static const int MAX_APERTURE = 100;
   static const int DELAY_BETWEEN_PULSES = 5;
   static const int DELAY_AFTER_OPEN = 200;
@@ -24,6 +30,8 @@ private:
   void _onCubeInsertionResult(bool inserted);
 
   bool _waitForCubeInsertion();
+
+  void _setLed(StatusLED status);
 
 public:
   Dropper();

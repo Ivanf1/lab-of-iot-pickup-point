@@ -15,6 +15,7 @@ void Dropper::init(int position, int servoPin, int irPin, int redLedPin, int yel
   this->_greenLedPin = greenLedPin;
 
   this->_servo.attach(this->_servoPin);
+  this->_setLed(StatusLED::EMPTY);
 }
 
 void Dropper::_open() {
@@ -36,29 +37,21 @@ void Dropper::releaseCube() {
   delay(DELAY_AFTER_OPEN);
   _close();
 
-  digitalWrite(this->_redLedPin, LOW);
-  digitalWrite(this->_greenLedPin, LOW);
-  digitalWrite(this->_yellowLedPin, HIGH);
+  this->_setLed(StatusLED::EMPTY);
 }
 
 bool Dropper::isEmpty() { return digitalRead(this->_irPin) == HIGH; }
 
 void Dropper::_onCubeInsertionResult(bool inserted) {
   if (inserted) {
-    digitalWrite(this->_redLedPin, HIGH);
-    digitalWrite(this->_greenLedPin, LOW);
-    digitalWrite(this->_yellowLedPin, LOW);
+    this->_setLed(StatusLED::FULL);
   } else {
-    digitalWrite(this->_redLedPin, LOW);
-    digitalWrite(this->_greenLedPin, LOW);
-    digitalWrite(this->_yellowLedPin, HIGH);
+    this->_setLed(StatusLED::EMPTY);
   }
 }
 
 bool Dropper::onCubeInsertionRequest() {
-  digitalWrite(this->_redLedPin, LOW);
-  digitalWrite(this->_greenLedPin, HIGH);
-  digitalWrite(this->_yellowLedPin, LOW);
+  this->_setLed(StatusLED::AWAITING_INSERTION);
 
   bool inserted = this->_waitForCubeInsertion();
 
@@ -77,4 +70,27 @@ bool Dropper::_waitForCubeInsertion() {
   }
 
   return i <= 50;
+}
+
+void Dropper::_setLed(StatusLED status) {
+  switch (status) {
+  case EMPTY:
+    digitalWrite(this->_redLedPin, LOW);
+    digitalWrite(this->_greenLedPin, LOW);
+    digitalWrite(this->_yellowLedPin, HIGH);
+    break;
+  case FULL:
+    digitalWrite(this->_redLedPin, HIGH);
+    digitalWrite(this->_greenLedPin, LOW);
+    digitalWrite(this->_yellowLedPin, LOW);
+    break;
+  case AWAITING_INSERTION:
+    digitalWrite(this->_redLedPin, LOW);
+    digitalWrite(this->_greenLedPin, HIGH);
+    digitalWrite(this->_yellowLedPin, LOW);
+    break;
+
+  default:
+    break;
+  }
 }
