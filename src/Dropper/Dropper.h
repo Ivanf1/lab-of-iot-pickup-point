@@ -19,7 +19,9 @@ private:
   void _close();
 
 public:
-  Dropper(int position, int servoPin);
+  Dropper();
+
+  void init(int position, int servoPin);
 
   void releaseCube();
 };

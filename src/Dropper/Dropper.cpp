@@ -2,7 +2,9 @@
 
 #include <Arduino.h>
 
-Dropper::Dropper(int position, int servoPin) {
+Dropper::Dropper() {}
+
+void Dropper::init(int position, int servoPin) {
   this->position = position;
   this->servoPin = servoPin;
 

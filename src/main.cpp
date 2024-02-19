@@ -1,43 +1,41 @@
 #include <Arduino.h>
-#include <Servo.h>
+#include <PubSubClient.h>
 
-static const int servoPin = 13;
-static const int irPin = 14;
+#include <Dropper/Dropper.h>
 
-static const int redLedPin = 25;
-static const int yellowLedPin = 33;
-static const int greenLedPin = 32;
+static const int LEFT_DROPPER_POSITION = 0;
+static const int RIGHT_DROPPER_POSITION = 1;
 
-Servo servo;
+static const int leftServoPin = 19;
+static const int leftIrPin = 18;
+static const int leftRedLedPin = 21;
+static const int leftYellowLedPin = 22;
+static const int leftGreenLedPin = 23;
 
-void drop_cube(void) {
-  for (int posDegrees = 0; posDegrees <= 100; posDegrees++) {
-    servo.write(posDegrees);
-    delay(5);
-  }
+static const int rightServoPin = 26;
+static const int rightIrPin = 27;
+static const int rightRedLedPin = 25;
+static const int rightYellowLedPin = 33;
+static const int rightGreenLedPin = 32;
 
-  delay(100);
-
-  for (int posDegrees = 100; posDegrees >= 0; posDegrees--) {
-    servo.write(posDegrees);
-    delay(5);
-  }
-}
-
-void on_cube_drop_message_received(void) {}
+Dropper leftDropper;
 
 void setup() {
   Serial.begin(115200);
-  servo.attach(servoPin);
-  pinMode(irPin, INPUT);
+  // servo.attach(servoPin);
+  // pinMode(irPin, INPUT);
+  leftDropper.init(LEFT_DROPPER_POSITION, leftServoPin);
 
-  pinMode(redLedPin, OUTPUT);
-  pinMode(yellowLedPin, OUTPUT);
-  pinMode(greenLedPin, OUTPUT);
+  // pinMode(redLedPin, OUTPUT);
+  // pinMode(yellowLedPin, OUTPUT);
+  // pinMode(greenLedPin, OUTPUT);
 }
 
 void loop() {
-  int state = digitalRead(irPin);
+  // int state = digitalRead(irPin);
+
+  leftDropper.releaseCube();
+  delay(2000);
 
   // if (state == LOW)
   // {
@@ -50,19 +48,19 @@ void loop() {
 
   // delay(10);
 
-  digitalWrite(redLedPin, LOW);
-  digitalWrite(yellowLedPin, LOW);
-  digitalWrite(greenLedPin, HIGH);
+  // digitalWrite(redLedPin, LOW);
+  // digitalWrite(yellowLedPin, LOW);
+  // digitalWrite(greenLedPin, HIGH);
 
-  delay(2000);
+  // delay(2000);
 
-  digitalWrite(redLedPin, LOW);
-  digitalWrite(yellowLedPin, HIGH);
-  digitalWrite(greenLedPin, LOW);
+  // digitalWrite(redLedPin, LOW);
+  // digitalWrite(yellowLedPin, HIGH);
+  // digitalWrite(greenLedPin, LOW);
 
-  digitalWrite(redLedPin, HIGH);
-  digitalWrite(yellowLedPin, LOW);
-  digitalWrite(greenLedPin, LOW);
+  // digitalWrite(redLedPin, HIGH);
+  // digitalWrite(yellowLedPin, LOW);
+  // digitalWrite(greenLedPin, LOW);
 
-  delay(10000);
+  // delay(10000);
 }
