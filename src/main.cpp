@@ -86,23 +86,18 @@ void on_mqtt_message_received(char* topic, byte* payload, unsigned int length) {
         ESP_LOGD(TAG, "Cube has been inserted in left dropper");
         doc["status"] = "inserted";
 
-        doc_size = measureJson(doc);
-        output = (uint8_t*)malloc(doc_size);
-        serializeJson(doc, (void*)output, doc_size);
-
-        mqttClient.publish(insert_response_cube_topic, output, doc_size);
-        free(output);
       } else {
         ESP_LOGD(TAG, "Cube could NOT be inserted in left dropper");
         doc["status"] = "error";
-
-        doc_size = measureJson(doc);
-        output = (uint8_t*)malloc(doc_size);
-        serializeJson(doc, (void*)output, doc_size);
-
-        mqttClient.publish(insert_response_cube_topic, output, doc_size);
-        free(output);
       }
+
+      doc_size = measureJson(doc);
+      output = (uint8_t*)malloc(doc_size);
+      serializeJson(doc, (void*)output, doc_size);
+
+      mqttClient.publish(insert_response_cube_topic, output, doc_size);
+      free(output);
+
       return;
     }
 
@@ -113,31 +108,25 @@ void on_mqtt_message_received(char* topic, byte* payload, unsigned int length) {
       if (inserted) {
         ESP_LOGD(TAG, "Cube has been inserted in right dropper");
         doc["status"] = "inserted";
-
-        doc_size = measureJson(doc);
-        output = (uint8_t*)malloc(doc_size);
-        serializeJson(doc, (void*)output, doc_size);
-
-        mqttClient.publish(insert_response_cube_topic, output, doc_size);
-        free(output);
       } else {
         ESP_LOGD(TAG, "Cube could NOT be inserted in right dropper");
         doc["status"] = "error";
-
-        doc_size = measureJson(doc);
-        output = (uint8_t*)malloc(doc_size);
-        serializeJson(doc, (void*)output, doc_size);
-
-        mqttClient.publish(insert_response_cube_topic, output, doc_size);
-        free(output);
       }
+
+      doc_size = measureJson(doc);
+      output = (uint8_t*)malloc(doc_size);
+      serializeJson(doc, (void*)output, doc_size);
+
+      mqttClient.publish(insert_response_cube_topic, output, doc_size);
+      free(output);
+
       return;
     }
 
     ESP_LOGE(TAG, "Cube Droppers are all already full!");
 
     doc["cubeDropperN"] = -1;
-    doc["status"] = "error";
+    doc["status"] = "all full";
     doc_size = measureJson(doc);
     output = (uint8_t*)malloc(doc_size);
     serializeJson(doc, (void*)output, doc_size);
