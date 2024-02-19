@@ -162,14 +162,13 @@ void mqtt_connect() {
   while (!mqttClient.connected()) {
     ESP_LOGD(TAG, "Attempting MQTT connection");
     if (mqttClient.connect(
-            "pickup-point-" PICKUP_POINT_N_STR, "sm_iot_lab/pickup_point/" PICKUP_POINT_N_STR "/status", 2, false,
-            "down"
+            "pickup-point-" PICKUP_POINT_N_STR, "sm_iot_lab/pickup_point/" PICKUP_POINT_N_STR "/status", 2, true, "down"
         )) {
       ESP_LOGD(TAG, "MQTT connection established");
       mqttClient.subscribe(release_request_cube_0_topic);
       mqttClient.subscribe(release_request_cube_1_topic);
       mqttClient.subscribe(insert_request_cube_topic);
-      mqttClient.publish("sm_iot_lab/pickup_point/" PICKUP_POINT_N_STR "/status", "up");
+      mqttClient.publish("sm_iot_lab/pickup_point/" PICKUP_POINT_N_STR "/status", "up", true);
     } else {
       ESP_LOGD(TAG, "MQTT connection failed. Try again in %d seconds", WAIT_TIME_BEFORE_RECONNECT / 1000);
       delay(WAIT_TIME_BEFORE_RECONNECT);
