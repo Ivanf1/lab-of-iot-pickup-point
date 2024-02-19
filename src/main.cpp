@@ -9,8 +9,9 @@
 
 #include <esp_log.h>
 
-#define TAG "MAIN"
+#define TAG                "MAIN"
 
+#define PICKUP_POINT_N_STR "0"
 static const int PICKUP_POINT_N = 0;
 
 static const int LEFT_DROPPER_POSITION = 0;
@@ -30,8 +31,11 @@ static const int rightGreenLedPin = 32;
 
 static const int WAIT_TIME_BEFORE_RECONNECT = 1000;
 
-static const char* release_cube_0_topic = "sm_iot_lab/pickup_point/0/cube/0/release_request";
-static const char* release_cube_1_topic = "sm_iot_lab/pickup_point/0/cube/1/release_request";
+static const char* release_request_cube_0_topic = "sm_iot_lab/pickup_point/0/cube/0/release_request";
+static const char* release_response_cube_0_topic = "sm_iot_lab/pickup_point/0/cube/0/release_response";
+
+static const char* release_request_cube_1_topic = "sm_iot_lab/pickup_point/0/cube/1/release_request";
+static const char* release_response_cube_1_topic = "sm_iot_lab/pickup_point/0/cube/1/release_response";
 
 static const char* insert_request_cube_topic = "sm_iot_lab/pickup_point/0/cube/insert_request";
 static const char* insert_response_cube_topic = "sm_iot_lab/pickup_point/0/cube/insert_response";
@@ -49,7 +53,7 @@ void on_mqtt_message_received(char* topic, byte* payload, unsigned int length) {
     return;
   }
 
-  if (strcmp(topic, release_cube_0_topic) == 0) {
+  if (strcmp(topic, release_request_cube_0_topic) == 0) {
     if (leftDropper.isEmpty()) {
       ESP_LOGE(TAG, "Requested cube dropper 0 is empty!");
       return;
@@ -57,10 +61,11 @@ void on_mqtt_message_received(char* topic, byte* payload, unsigned int length) {
 
     leftDropper.releaseCube();
     ESP_LOGD(TAG, "Cube 0 has been released");
+    mqttClient.publish(release_response_cube_0_topic, "");
     return;
   }
 
-  if (strcmp(topic, release_cube_1_topic) == 0) {
+  if (strcmp(topic, release_request_cube_1_topic) == 0) {
     if (rightDropper.isEmpty()) {
       ESP_LOGE(TAG, "Requested cube dropper 1 is empty!");
       return;
@@ -68,6 +73,7 @@ void on_mqtt_message_received(char* topic, byte* payload, unsigned int length) {
 
     rightDropper.releaseCube();
     ESP_LOGD(TAG, "Cube 1 has been released");
+    mqttClient.publish(release_response_cube_1_topic, "");
     return;
   }
 
@@ -140,10 +146,10 @@ void on_mqtt_message_received(char* topic, byte* payload, unsigned int length) {
 void mqtt_connect() {
   while (!mqttClient.connected()) {
     ESP_LOGD(TAG, "Attempting MQTT connection");
-    if (mqttClient.connect("pickup-point-0")) {
+    if (mqttClient.connect("pickup-point-" PICKUP_POINT_N_STR)) {
       ESP_LOGD(TAG, "MQTT connection established");
-      mqttClient.subscribe(release_cube_0_topic);
-      mqttClient.subscribe(release_cube_1_topic);
+      mqttClient.subscribe(release_request_cube_0_topic);
+      mqttClient.subscribe(release_request_cube_1_topic);
       mqttClient.subscribe(insert_request_cube_topic);
     } else {
       ESP_LOGD(TAG, "MQTT connection failed. Try again in %d seconds", WAIT_TIME_BEFORE_RECONNECT / 1000);
