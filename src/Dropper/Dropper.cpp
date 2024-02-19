@@ -5,22 +5,23 @@
 Dropper::Dropper() {}
 
 void Dropper::init(int position, int servoPin) {
-  this->position = position;
-  this->servoPin = servoPin;
+  this->_position = position;
+  this->_servoPin = servoPin;
+  this->_empty = true;
 
-  this->servo.attach(this->servoPin);
+  this->_servo.attach(this->_servoPin);
 }
 
 void Dropper::_open() {
   for (int posDegrees = 0; posDegrees <= MAX_APERTURE; posDegrees++) {
-    servo.write(posDegrees);
+    this->_servo.write(posDegrees);
     delay(DELAY_BETWEEN_PULSES);
   }
 }
 
 void Dropper::_close() {
   for (int posDegrees = MAX_APERTURE; posDegrees >= 0; posDegrees--) {
-    servo.write(posDegrees);
+    this->_servo.write(posDegrees);
     delay(DELAY_BETWEEN_PULSES);
   }
 }
@@ -29,4 +30,10 @@ void Dropper::releaseCube() {
   _open();
   delay(DELAY_AFTER_OPEN);
   _close();
+
+  this->_empty = true;
 }
+
+bool Dropper::isEmpty() { return _empty; }
+
+void Dropper::onCubeInserted() { this->_empty = false; }

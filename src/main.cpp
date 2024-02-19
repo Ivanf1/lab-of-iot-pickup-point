@@ -27,27 +27,52 @@ static const int rightGreenLedPin = 32;
 
 static const int WAIT_TIME_BEFORE_RECONNECT = 1000;
 
+static const char* release_cube_0_topic = "sm_iot_lab/pickup_point/0/cube/0/release";
+static const char* insert_request_cube_0_topic = "sm_iot_lab/pickup_point/0/cube/0/insert_request";
+
 Dropper leftDropper;
 
 WiFiClient client;
 PubSubClient mqttClient(client);
 
 void on_mqtt_message_received(char* topic, byte* payload, unsigned int length) {
-  ESP_LOGD(TAG, "Message arrived in topic: %s", topic);
-  // for (int i = 0; i < length; i++) {
-  //   ESP_LOGD(TAG, "%c", (char)payload[i]);
-  // }
-  // ESP_LOGD(TAG, "\n");
+  ESP_LOGD(TAG, "Message arrived in topic: %s, length %d", topic, length);
+  if (length > 0) {
+    ESP_LOGE(TAG, "Invalid mqtt message");
+    return;
+  }
+
+  if (strcmp(topic, release_cube_0_topic) == 0) {
+    if (leftDropper.isEmpty()) {
+      ESP_LOGE(TAG, "Requested cube dropper is empty!");
+      return;
+    }
+
+    leftDropper.releaseCube();
+    EPS_LOGD(TAG, "Cube 0 has been released");
+    return;
+  }
+
+  if (strcmp(topic, insert_request_cube_0_topic) == 0) {
+    if (!leftDropper.isEmpty()) {
+      ESP_LOGE(TAG, "Cube dropper is already occupied!");
+      return;
+    }
+
+    leftDropper.onCubeInserted();
+    return;
+  }
 }
 
 void mqtt_connect() {
   while (!mqttClient.connected()) {
     ESP_LOGD(TAG, "Attempting MQTT connection");
-    if (mqttClient.connect("pickup-point-1")) {
+    if (mqttClient.connect("pickup-point-0")) {
       ESP_LOGD(TAG, "MQTT connection established");
-      mqttClient.subscribe("sm_iot_lab/pickup");
+      mqttClient.subscribe(release_cube_0_topic);
+      mqttClient.subscribe(insert_request_cube_0_topic);
     } else {
-      ESP_LOGD(TAG, "MQTT connection failed. Try again in %d seconds", WAIT_TIME_BEFORE_RECONNECT);
+      ESP_LOGD(TAG, "MQTT connection failed. Try again in %d seconds", WAIT_TIME_BEFORE_RECONNECT / 1000);
       delay(WAIT_TIME_BEFORE_RECONNECT);
     }
   }
@@ -55,7 +80,6 @@ void mqtt_connect() {
 
 void setup() {
   Serial.begin(115200);
-  // servo.attach(servoPin);
   // pinMode(irPin, INPUT);
   leftDropper.init(LEFT_DROPPER_POSITION, leftServoPin);
 
