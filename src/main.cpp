@@ -12,6 +12,8 @@
 #define TAG                "MAIN"
 
 #define PICKUP_POINT_N_STR "0"
+#define PUBLISH_BASE       "sm_iot_lab/pickup_point/"
+
 static const int PICKUP_POINT_N = 0;
 
 static const int LEFT_DROPPER_POSITION = 0;
@@ -31,14 +33,14 @@ static const int rightGreenLedPin = 32;
 
 static const int WAIT_TIME_BEFORE_RECONNECT = 1000;
 
-static const char* release_request_cube_0_topic = "sm_iot_lab/pickup_point/0/cube/0/release_request";
-static const char* release_response_cube_0_topic = "sm_iot_lab/pickup_point/0/cube/0/release_response";
+static const char* release_request_cube_0_topic = PUBLISH_BASE PICKUP_POINT_N_STR "/cube/0/release_request";
+static const char* release_response_cube_0_topic = PUBLISH_BASE PICKUP_POINT_N_STR "/cube/0/release_response";
 
-static const char* release_request_cube_1_topic = "sm_iot_lab/pickup_point/0/cube/1/release_request";
-static const char* release_response_cube_1_topic = "sm_iot_lab/pickup_point/0/cube/1/release_response";
+static const char* release_request_cube_1_topic = PUBLISH_BASE PICKUP_POINT_N_STR "/cube/1/release_request";
+static const char* release_response_cube_1_topic = PUBLISH_BASE PICKUP_POINT_N_STR "/cube/1/release_response";
 
-static const char* insert_request_cube_topic = "sm_iot_lab/pickup_point/0/cube/insert_request";
-static const char* insert_response_cube_topic = "sm_iot_lab/pickup_point/0/cube/insert_response";
+static const char* insert_request_cube_topic = PUBLISH_BASE PICKUP_POINT_N_STR "/cube/insert_request";
+static const char* insert_response_cube_topic = PUBLISH_BASE PICKUP_POINT_N_STR "/cube/insert_response";
 
 Dropper leftDropper;
 Dropper rightDropper;
