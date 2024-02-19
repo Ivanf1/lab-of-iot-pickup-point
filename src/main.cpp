@@ -80,8 +80,10 @@ void on_mqtt_message_received(char* topic, byte* payload, unsigned int length) {
     bool inserted = leftDropper.cubeInsertionRequest();
     if (inserted) {
       ESP_LOGD(TAG, "Cube 0 has been inserted");
+      mqttClient.publish(insert_response_cube_0_topic, "inserted");
     } else {
       ESP_LOGD(TAG, "Cube 0 has NOT been inserted");
+      mqttClient.publish(insert_response_cube_0_topic, "error");
     }
     return;
   }
@@ -96,8 +98,10 @@ void on_mqtt_message_received(char* topic, byte* payload, unsigned int length) {
     bool inserted = rightDropper.cubeInsertionRequest();
     if (inserted) {
       ESP_LOGD(TAG, "Cube 1 has been inserted");
+      mqttClient.publish(insert_response_cube_1_topic, "inserted");
     } else {
       ESP_LOGD(TAG, "Cube 1 has NOT been inserted");
+      mqttClient.publish(insert_response_cube_1_topic, "error");
     }
     return;
   }
