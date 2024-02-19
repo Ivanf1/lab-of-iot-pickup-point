@@ -50,7 +50,7 @@ void Dropper::_onCubeInsertionResult(bool inserted) {
   }
 }
 
-bool Dropper::onCubeInsertionRequest() {
+bool Dropper::cubeInsertionRequest() {
   this->_setLed(StatusLED::AWAITING_INSERTION);
 
   bool inserted = this->_waitForCubeInsertion();
@@ -74,17 +74,17 @@ bool Dropper::_waitForCubeInsertion() {
 
 void Dropper::_setLed(StatusLED status) {
   switch (status) {
-  case EMPTY:
+  case StatusLED::EMPTY:
     digitalWrite(this->_redLedPin, LOW);
     digitalWrite(this->_greenLedPin, LOW);
     digitalWrite(this->_yellowLedPin, HIGH);
     break;
-  case FULL:
+  case StatusLED::FULL:
     digitalWrite(this->_redLedPin, HIGH);
     digitalWrite(this->_greenLedPin, LOW);
     digitalWrite(this->_yellowLedPin, LOW);
     break;
-  case AWAITING_INSERTION:
+  case StatusLED::AWAITING_INSERTION:
     digitalWrite(this->_redLedPin, LOW);
     digitalWrite(this->_greenLedPin, HIGH);
     digitalWrite(this->_yellowLedPin, LOW);

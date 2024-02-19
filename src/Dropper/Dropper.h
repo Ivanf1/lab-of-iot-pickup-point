@@ -42,5 +42,5 @@ public:
 
   bool isEmpty();
 
-  bool onCubeInsertionRequest();
+  bool cubeInsertionRequest();
 };

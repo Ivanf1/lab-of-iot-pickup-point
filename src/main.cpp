@@ -77,7 +77,7 @@ void on_mqtt_message_received(char* topic, byte* payload, unsigned int length) {
     }
 
     // wait for cube to be inserted
-    bool inserted = leftDropper.onCubeInsertionRequest();
+    bool inserted = leftDropper.cubeInsertionRequest();
     if (inserted) {
       ESP_LOGD(TAG, "Cube 0 has been inserted");
     } else {
@@ -93,7 +93,7 @@ void on_mqtt_message_received(char* topic, byte* payload, unsigned int length) {
     }
 
     // wait for cube to be inserted
-    bool inserted = rightDropper.onCubeInsertionRequest();
+    bool inserted = rightDropper.cubeInsertionRequest();
     if (inserted) {
       ESP_LOGD(TAG, "Cube 1 has been inserted");
     } else {
