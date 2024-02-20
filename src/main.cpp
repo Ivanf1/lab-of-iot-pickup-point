@@ -108,7 +108,6 @@ void on_mqtt_message_received(char* topic, byte* payload, unsigned int length) {
       if (inserted) {
         ESP_LOGD(TAG, "Cube has been inserted in left dropper");
         doc["status"] = "inserted";
-
       } else {
         ESP_LOGD(TAG, "Cube could NOT be inserted in left dropper");
         doc["status"] = "error";
@@ -192,7 +191,7 @@ void setup() {
   pinMode(rightYellowLedPin, OUTPUT);
   pinMode(rightGreenLedPin, OUTPUT);
   rightDropper.init(
-      RIGHT_DROPPER_POSITION, rightServoPin, rightIrPin, leftRedLedPin, leftYellowLedPin, leftGreenLedPin
+      RIGHT_DROPPER_POSITION, rightServoPin, rightIrPin, rightRedLedPin, rightYellowLedPin, rightGreenLedPin
   );
 
   WiFi.mode(WIFI_STA);
