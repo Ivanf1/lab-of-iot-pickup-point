@@ -9,10 +9,12 @@
 
 #include <esp_log.h>
 
-#define TAG                "MAIN"
+#define TAG                        "MAIN"
 
-#define PICKUP_POINT_N_STR "0"
-#define PUBLISH_BASE       "sm_iot_lab/pickup_point/"
+#define PICKUP_POINT_N_STR         "0"
+#define PUBLISH_BASE               "sm_iot_lab/pickup_point/"
+#define LEFT_DROPPER_POSITION_STR  "0"
+#define RIGHT_DROPPER_POSITION_STR "1"
 
 static const int PICKUP_POINT_N = 0;
 
@@ -33,11 +35,15 @@ static const int rightGreenLedPin = 32;
 
 static const int WAIT_TIME_BEFORE_RECONNECT = 1000;
 
-static const char* release_request_cube_0_topic = PUBLISH_BASE PICKUP_POINT_N_STR "/cube/0/release/request";
-static const char* release_response_cube_0_topic = PUBLISH_BASE PICKUP_POINT_N_STR "/cube/0/release/response";
+static const char* release_request_cube_left_topic =
+    PUBLISH_BASE PICKUP_POINT_N_STR "/cube/" LEFT_DROPPER_POSITION_STR "/release/request";
+static const char* release_response_cube_left_topic =
+    PUBLISH_BASE PICKUP_POINT_N_STR "/cube/" LEFT_DROPPER_POSITION_STR "/release/response";
 
-static const char* release_request_cube_1_topic = PUBLISH_BASE PICKUP_POINT_N_STR "/cube/1/release/request";
-static const char* release_response_cube_1_topic = PUBLISH_BASE PICKUP_POINT_N_STR "/cube/1/release/response";
+static const char* release_request_cube_right_topic =
+    PUBLISH_BASE PICKUP_POINT_N_STR "/cube/" RIGHT_DROPPER_POSITION_STR "/release/request";
+static const char* release_response_cube_right_topic =
+    PUBLISH_BASE PICKUP_POINT_N_STR "/cube/" RIGHT_DROPPER_POSITION_STR "/release/response";
 
 static const char* insert_request_cube_topic = PUBLISH_BASE PICKUP_POINT_N_STR "/cube/insert/request";
 static const char* insert_response_cube_topic = PUBLISH_BASE PICKUP_POINT_N_STR "/cube/insert/response";
@@ -55,7 +61,7 @@ void on_mqtt_message_received(char* topic, byte* payload, unsigned int length) {
     return;
   }
 
-  if (strcmp(topic, release_request_cube_0_topic) == 0) {
+  if (strcmp(topic, release_request_cube_left_topic) == 0) {
     if (leftDropper.isEmpty()) {
       ESP_LOGE(TAG, "Requested cube dropper 0 is empty!");
       return;
@@ -69,12 +75,12 @@ void on_mqtt_message_received(char* topic, byte* payload, unsigned int length) {
 
     leftDropper.releaseCube();
     ESP_LOGD(TAG, "Cube 0 has been released");
-    mqttClient.publish(release_response_cube_0_topic, output, doc_size);
+    mqttClient.publish(release_response_cube_left_topic, output, doc_size);
     free(output);
     return;
   }
 
-  if (strcmp(topic, release_request_cube_1_topic) == 0) {
+  if (strcmp(topic, release_request_cube_right_topic) == 0) {
     if (rightDropper.isEmpty()) {
       ESP_LOGE(TAG, "Requested cube dropper 1 is empty!");
       return;
@@ -89,7 +95,7 @@ void on_mqtt_message_received(char* topic, byte* payload, unsigned int length) {
     uint8_t* output = (uint8_t*)malloc(doc_size);
     serializeJson(doc, (void*)output, doc_size);
 
-    mqttClient.publish(release_response_cube_1_topic, output, doc_size);
+    mqttClient.publish(release_response_cube_right_topic, output, doc_size);
     free(output);
     return;
   }
@@ -166,8 +172,8 @@ void mqtt_connect() {
             "pickup-point-" PICKUP_POINT_N_STR, "sm_iot_lab/pickup_point/" PICKUP_POINT_N_STR "/status", 2, true, "down"
         )) {
       ESP_LOGD(TAG, "MQTT connection established");
-      mqttClient.subscribe(release_request_cube_0_topic);
-      mqttClient.subscribe(release_request_cube_1_topic);
+      mqttClient.subscribe(release_request_cube_left_topic);
+      mqttClient.subscribe(release_request_cube_right_topic);
       mqttClient.subscribe(insert_request_cube_topic);
       mqttClient.publish("sm_iot_lab/pickup_point/" PICKUP_POINT_N_STR "/status", "up", true);
     } else {
