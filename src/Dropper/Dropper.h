@@ -15,6 +15,7 @@ private:
   static const int DELAY_BETWEEN_PULSES = 5;
   static const int DELAY_AFTER_OPEN = 200;
   int _position;
+  bool _empty;
 
   Servo _servo;
   int _servoPin;
@@ -26,6 +27,8 @@ private:
   void _open();
 
   void _close();
+
+  bool _isCubeDetected();
 
   void _onCubeInsertionResult(bool inserted);
 

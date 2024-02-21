@@ -16,6 +16,8 @@ void Dropper::init(int position, int servoPin, int irPin, int redLedPin, int yel
 
   this->_servo.attach(this->_servoPin);
   this->_setLed(StatusLED::EMPTY);
+
+  this->_empty = !this->_isCubeDetected();
 }
 
 void Dropper::_open() {
@@ -32,20 +34,26 @@ void Dropper::_close() {
   }
 }
 
+bool Dropper::_isCubeDetected() { return digitalRead(this->_irPin) == LOW; }
+
 void Dropper::releaseCube() {
   _open();
   delay(DELAY_AFTER_OPEN);
   _close();
 
+  this->_empty = true;
+
   this->_setLed(StatusLED::EMPTY);
 }
 
-bool Dropper::isEmpty() { return digitalRead(this->_irPin) == HIGH; }
+bool Dropper::isEmpty() { return this->_empty; }
 
 void Dropper::_onCubeInsertionResult(bool inserted) {
   if (inserted) {
+    this->_empty = false;
     this->_setLed(StatusLED::FULL);
   } else {
+    this->_empty = true;
     this->_setLed(StatusLED::EMPTY);
   }
 }
