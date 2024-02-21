@@ -33,14 +33,14 @@ static const int rightGreenLedPin = 32;
 
 static const int WAIT_TIME_BEFORE_RECONNECT = 1000;
 
-static const char* release_request_cube_0_topic = PUBLISH_BASE PICKUP_POINT_N_STR "/cube/0/release_request";
-static const char* release_response_cube_0_topic = PUBLISH_BASE PICKUP_POINT_N_STR "/cube/0/release_response";
+static const char* release_request_cube_0_topic = PUBLISH_BASE PICKUP_POINT_N_STR "/cube/0/release/request";
+static const char* release_response_cube_0_topic = PUBLISH_BASE PICKUP_POINT_N_STR "/cube/0/release/response";
 
-static const char* release_request_cube_1_topic = PUBLISH_BASE PICKUP_POINT_N_STR "/cube/1/release_request";
-static const char* release_response_cube_1_topic = PUBLISH_BASE PICKUP_POINT_N_STR "/cube/1/release_response";
+static const char* release_request_cube_1_topic = PUBLISH_BASE PICKUP_POINT_N_STR "/cube/1/release/request";
+static const char* release_response_cube_1_topic = PUBLISH_BASE PICKUP_POINT_N_STR "/cube/1/release/response";
 
-static const char* insert_request_cube_topic = PUBLISH_BASE PICKUP_POINT_N_STR "/cube/insert_request";
-static const char* insert_response_cube_topic = PUBLISH_BASE PICKUP_POINT_N_STR "/cube/insert_response";
+static const char* insert_request_cube_topic = PUBLISH_BASE PICKUP_POINT_N_STR "/cube/insert/request";
+static const char* insert_response_cube_topic = PUBLISH_BASE PICKUP_POINT_N_STR "/cube/insert/response";
 
 Dropper leftDropper;
 Dropper rightDropper;
