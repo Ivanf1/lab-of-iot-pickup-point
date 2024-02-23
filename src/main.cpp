@@ -9,14 +9,16 @@
 
 #include <esp_log.h>
 
-#define TAG                        "MAIN"
+#define TAG                "MAIN"
 
-#define PICKUP_POINT_N_STR         "0"
+#define PICKUP_POINT_N_STR "0"
+// #define PICKUP_POINT_N_STR         "1"
 #define PUBLISH_BASE               "sm_iot_lab/pickup_point/"
 #define LEFT_DROPPER_POSITION_STR  "0"
 #define RIGHT_DROPPER_POSITION_STR "1"
 
 static const int PICKUP_POINT_N = 0;
+// static const int PICKUP_POINT_N = 1;
 
 static const int LEFT_DROPPER_POSITION = 0;
 static const int RIGHT_DROPPER_POSITION = 1;
@@ -56,10 +58,6 @@ PubSubClient mqttClient(client);
 
 void on_mqtt_message_received(char* topic, byte* payload, unsigned int length) {
   ESP_LOGD(TAG, "Message arrived in topic: %s, length %d", topic, length);
-  if (length > 0) {
-    ESP_LOGE(TAG, "Invalid mqtt message");
-    return;
-  }
 
   if (strcmp(topic, release_request_cube_left_topic) == 0) {
     if (leftDropper.isEmpty()) {
@@ -101,11 +99,14 @@ void on_mqtt_message_received(char* topic, byte* payload, unsigned int length) {
   }
 
   if (strcmp(topic, insert_request_cube_topic) == 0) {
-    StaticJsonDocument<200> doc;
+    StaticJsonDocument<300> doc;
     size_t doc_size;
     uint8_t* output;
     doc["pickupPointN"] = PICKUP_POINT_N;
-    doc["cubeId"] = (char*)payload;
+    char arr[37];
+    strncpy(arr, (char*)payload, sizeof(arr));
+    arr[sizeof(arr) - 1] = '\0';
+    doc["cubeId"] = arr;
 
     if (leftDropper.isEmpty()) {
       doc["cubeDropperN"] = LEFT_DROPPER_POSITION;
@@ -123,7 +124,7 @@ void on_mqtt_message_received(char* topic, byte* payload, unsigned int length) {
       output = (uint8_t*)malloc(doc_size);
       serializeJson(doc, (void*)output, doc_size);
 
-      mqttClient.publish(insert_response_cube_topic, output, doc_size);
+      bool sent = mqttClient.publish(insert_response_cube_topic, output, doc_size);
       free(output);
 
       return;
