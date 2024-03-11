@@ -71,13 +71,13 @@ bool Dropper::cubeInsertionRequest() {
 bool Dropper::_waitForCubeInsertion() {
   ESP_LOGD(TAG, "Waiting for cube to be inserted");
   int i = 0;
-  while (digitalRead(this->_irPin) == HIGH && i <= 50) {
+  while (digitalRead(this->_irPin) == HIGH && i <= 500) {
     i++;
     ESP_LOGD(TAG, ".");
     delay(150);
   }
 
-  return i <= 50;
+  return i <= 500;
 }
 
 void Dropper::_setLed(StatusLED status) {

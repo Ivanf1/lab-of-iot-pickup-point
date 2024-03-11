@@ -9,16 +9,16 @@
 
 #include <esp_log.h>
 
-#define TAG                "MAIN"
+#define TAG "MAIN"
 
-#define PICKUP_POINT_N_STR "0"
-// #define PICKUP_POINT_N_STR         "1"
+// #define PICKUP_POINT_N_STR "0"
+#define PICKUP_POINT_N_STR         "1"
 #define PUBLISH_BASE               "sm_iot_lab/pickup_point/"
 #define LEFT_DROPPER_POSITION_STR  "0"
 #define RIGHT_DROPPER_POSITION_STR "1"
 
-static const int PICKUP_POINT_N = 0;
-// static const int PICKUP_POINT_N = 1;
+// static const int PICKUP_POINT_N = 0;
+static const int PICKUP_POINT_N = 1;
 
 static const int LEFT_DROPPER_POSITION = 0;
 static const int RIGHT_DROPPER_POSITION = 1;
